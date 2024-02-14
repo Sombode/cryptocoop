@@ -46,6 +46,7 @@
           msg: 'Letters cannot decode to themselves',
         });
         return;
+        //
       }
 
       dispatch('replace', {
