@@ -76,7 +76,7 @@
     --light-grey: #f0f1f2;
     --primary-color: var(--light-blue);
     --hovered-letter-color: var(--yellow);
-    --selected-letter-color: var(--amber);
+    --selected-letter-color: var(--light-blue);
     --focussed-char-color: var(--amber);
     --solved-text-color: var(--green);
     --panel-title-bg-color: var(--light-grey);
