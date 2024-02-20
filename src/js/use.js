@@ -50,6 +50,14 @@ export const replaceableElement = (node, options_ = {}) => {
       from: options.ogchar,
       to: e.key.toUpperCase(),
     });
+
+    // Focus on next letter if possible (horribly janky I know)
+    /**
+     * @type {HTMLElement[]}
+     */
+    const letters = [].slice.call(document.getElementsByClassName("decrypted-letter-input"));
+    letters[letters.indexOf(node) + 1].focus();
+    // 111 - 83
   };
 
   node.addEventListener('keydown', onKeyDown);
