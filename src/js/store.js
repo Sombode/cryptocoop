@@ -1,6 +1,6 @@
 import { derived, get, writable } from 'svelte/store';
 import { writable as lswritable } from 'svelte-local-storage-store';
-import { firstlaunch } from './constants.js';
+import { alphabet, firstlaunch } from './constants.js';
 
 /** @typedef {import('./quotes.js').EncryptedQuote} EncryptedQuote */
 
@@ -33,6 +33,7 @@ export const hivemindConnection = writable(
   /** @type {Connection | null} */ (null)
 );
 export const progress = writable([null, [true]][0]);
+export const substitutions = writable(Array(26).fill(null));
 export const solved = writable(false);
 export const isFirstLaunch = lswritable(firstlaunch, true);
 export const needsKeyboardEntry = writable(false);

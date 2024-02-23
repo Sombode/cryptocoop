@@ -10,6 +10,7 @@ import {
   progress,
   solved,
   users,
+  substitutions,
 } from './store.js';
 import {
   external,
@@ -21,6 +22,8 @@ import { log } from './utils.js';
 
 export const peer = new external.Peer();
 
+let stopSubSub = false;
+
 /**
  * @typedef {import('./store.js').User} User
  * @typedef {import('peerjs').DataConnection} Connection
@@ -29,6 +32,7 @@ export const peer = new external.Peer();
  * @typedef {{ type: 2, progress: null | boolean[], solved: boolean, name: string }}
  * UPDATE_S_MSG
  * @typedef {{ type: 3, users: User[] }} UPDATE_C_MSG
+ * @typedef {{ type: 4, subs: [] }} UPDATE_SUBS_MSG
  * @typedef {INIT_MSG | NEW_PROB_MSG | UPDATE_S_MSG | UPDATE_C_MSG} PeerData
  */
 
@@ -88,11 +92,18 @@ const updateFromServer = (_, data) => {
   users.set(data.users.filter((u) => u.id !== ourId));
 };
 
+/** @type {DataResponder<UPDATE_SUBS_MSG>} */
+const updateSubstitutions = (_, data) => {
+  stopSubSub = true;
+  substitutions.set(data.subs);
+}
+
 const dataResponders = [
   initializeRemotePlayer,
   onNewProblem,
   updateFromClient,
   updateFromServer,
+  updateSubstitutions,
 ];
 
 /** @type {(otherId: string) => () => void} */
@@ -190,6 +201,14 @@ const subscriptions = [
       });
     }
   }),
+  substitutions.subscribe(($subs) => {
+    if(!stopSubSub)
+      emit({
+        type: Messages.UPDATE_SUBSTITUTIONS,
+        subs: $subs,
+      });
+    stopSubSub = false;
+  })
 ];
 
 // @ts-ignore

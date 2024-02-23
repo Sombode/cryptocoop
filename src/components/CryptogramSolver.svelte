@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte';
   import { alphabet, splitQuote } from '@/js/quotes.js';
   import { log } from '@/js/utils.js';
+  import { substitutions } from '@/js/store';
 
   import Word from './Word.svelte';
   import ReplacementTable from './ReplacementTable.svelte';
@@ -21,6 +22,8 @@
     const newReplacement = [...replacement];
     newReplacement[alphabet.indexOf(from)] = to === 'BACKSPACE' ? '' : to;
     replacement = newReplacement;
+    // maybe??
+    substitutions.set(replacement);
   };
 
   /** @type {(replacement: string[], problem: EncryptedQuote | null) => boolean} */
