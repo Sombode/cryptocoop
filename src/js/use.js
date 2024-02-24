@@ -36,13 +36,25 @@ export const replaceableElement = (node, options_ = {}) => {
   const onKeyDown = (e) => {
     if (options.disabled) return;
 
-    if (e.key !== 'Tab') e.preventDefault();
+    e.preventDefault();
+    if( e.key == 'ArrowLeft') {
+      /** @type {HTMLElement[]} */
+      const letters = [].slice.call(document.querySelectorAll(".decrypted-letter:not(.non-alphabetic, .disabled) > .decrypted-letter-input"));
+      letters[letters.indexOf(node) - 1]?.focus();
+      return;
+    }
+    if( e.key == 'ArrowRight') {
+      /** @type {HTMLElement[]} */
+      const letters = [].slice.call(document.querySelectorAll(".decrypted-letter:not(.non-alphabetic, .disabled) > .decrypted-letter-input"));
+      letters[letters.indexOf(node) + 1]?.focus();
+      return;
+    }
 
     if (options.ogchar === e.key.toUpperCase()) {
-      dispatch('error', {
-        id: Errors.NO_SELF_DECODE,
-        msg: 'Letters cannot decode to themselves',
-      });
+      // dispatch('error', {
+      //   id: Errors.NO_SELF_DECODE,
+      //   msg: 'Letters cannot decode to themselves',
+      // });
       return;
     }
 
@@ -53,9 +65,8 @@ export const replaceableElement = (node, options_ = {}) => {
 
     // Focus on next letter if possible (horribly janky I know)
     /** @type {HTMLElement[]} */
-    const letters = [].slice.call(document.getElementsByClassName("decrypted-letter-input"));
-    letters[letters.indexOf(node) + 1].focus();
-    // 111 - 83
+    const letters = [].slice.call(document.querySelectorAll(".decrypted-letter.empty:not(.non-alphabetic, .disabled) > .decrypted-letter-input"));
+    letters[letters.indexOf(node) + 1]?.focus();
   };
 
   node.addEventListener('keydown', onKeyDown);
