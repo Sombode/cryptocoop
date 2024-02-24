@@ -41,6 +41,8 @@
 
 <style>
   .word {
+    font-family: var(--cipher-font);
+    font-weight: 700;
     display: flex;
     flex-direction: row;
     gap: 0;

@@ -62,9 +62,6 @@
       </div>
     </Panel>
   </div>
-  <Panel title="Help" dense closed>
-    <HelpInfo verbose />
-  </Panel>
   {#if connectingToHivemind}
     <Panel title="Connecting...">
       Connecting to {hivemindBrain ?? ''}

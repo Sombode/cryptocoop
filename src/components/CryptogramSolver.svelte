@@ -36,7 +36,7 @@
   /** @type {(e: CustomEvent<any>) => void} */
   const handleReplace = (e) => replace(e.detail);
 
-  $: problem;
+  $: problem, replacement.set(Array(26).fill(''));
 
   $: words = splitQuote(problem?.ciphertext ?? '');
   $: solved = isCorrect($replacement, problem);

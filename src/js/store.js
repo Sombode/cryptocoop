@@ -58,7 +58,6 @@ export const resetStores = () => {
   id.set('');
   gameProblem.set(null);
   name.set('');
-hivemindConnection.set(null);
   solved.set(false);
   replacement.set(Array(26).fill(''));
   hivemindConnection.set(null);

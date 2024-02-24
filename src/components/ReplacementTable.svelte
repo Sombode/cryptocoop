@@ -17,16 +17,16 @@
 
 <table class="replacement-table" class:disabled>
   <tr class="header">
-    <td title={cryptogramCharacterLabel} class="from-label">-</td>
-    <td title={occurencesCharacterLabel} class="occurences-label">#</td>
-    <td title={replacementCharacterLabel} class="to-label">🠗</td>
+    <td title={cryptogramCharacterLabel} class="from-label">BLANK</td>
+    <td title={occurencesCharacterLabel} class="occurences-label">Frequency</td>
+    <td title={replacementCharacterLabel} class="to-label">Replacement</td>
   </tr>
   {#each alphabet as ch, i}
     {@const replacementId = `replacement-${i}`}
     {@const isInQuote = frequencies.has(ch)}
     <tr class:no-occurence={!isInQuote}>
       <td id={replacementId}>{ch}</td>
-      <td>{isInQuote ? frequencies.get(ch) : 0}</td>
+      <td style="font-weight: 400;">{isInQuote ? frequencies.get(ch) : 0}</td>
       <ReplacementCharacter
         tag="td"
         replacement={$replacement[i]}
@@ -42,10 +42,14 @@
 
 <style>
   .replacement-table {
-    --border: 1px solid #ccc;
+    font-family: var(--cipher-font);
+    font-weight: 700;
+    --border: 1px solid black;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    user-select: none;
+    text-align: center;
   }
 
   tr {
@@ -69,8 +73,11 @@
   }
 
   .header {
-    width: 1.25rem;
-    text-align: center;
+    width: min-content;
+  }
+
+  .from-label {
+    color:transparent;
   }
 
   .to-label {
@@ -85,7 +92,6 @@
 
   .replacement-table :global(.decrypted-letter-input) {
     padding: 0.25rem;
-    text-align: left;
   }
 
   .replacement-table :global(div.decrypted-letter-input) {

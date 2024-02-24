@@ -68,16 +68,16 @@
 
   :root {
     --light-blue: #03a9f4;
-    --amber: #ffc107;
-    --yellow: #ffeb3b;
+    --amber: #ffd034;
+    --yellow: #fff490;
     --green: #4caf50;
     --red: #f44336;
     --grey: #cccccc;
     --light-grey: #f0f1f2;
     --primary-color: var(--light-blue);
     --hovered-letter-color: var(--yellow);
-    --selected-letter-color: var(--light-blue);
-    --focussed-char-color: var(--amber);
+    --selected-letter-color: var(--amber);
+    --focussed-char-color: var(--yellow);
     --solved-text-color: var(--green);
     --panel-title-bg-color: var(--light-grey);
     --panel-title-color: #505152;
