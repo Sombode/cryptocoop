@@ -7,8 +7,8 @@
   } from '@/js/constants.js';
   import { getCounts } from '@/js/utils.js';
   import ReplacementCharacter from './ReplacementCharacter.svelte';
+  import { replacement } from '@/js/store';
 
-  export let replacement = Array(26).fill(' ');
   export let quote = '';
   export let disabled = false;
 
@@ -29,7 +29,7 @@
       <td>{isInQuote ? frequencies.get(ch) : 0}</td>
       <ReplacementCharacter
         tag="td"
-        replacement={replacement[i]}
+        replacement={$replacement[i]}
         disabled={disabled || !isInQuote}
         ogchar={ch}
         disableUnderline

@@ -1,8 +1,9 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import { get } from 'svelte/store';
   import { alphabet, splitQuote } from '@/js/quotes.js';
   import { log } from '@/js/utils.js';
-  import { substitutions } from '@/js/store';
+  import { replacement } from '@/js/store';
 
   import Word from './Word.svelte';
   import ReplacementTable from './ReplacementTable.svelte';
@@ -14,16 +15,15 @@
 
   const dispatch = createEventDispatcher();
 
-  let replacement = Array(26).fill('');
-
   /** @type {(replacement: { from: string, to: string }) => void} */
   const replace = ({ from, to }) => {
     if ((to.length !== 1 || !/[a-zA-Z]/.test(to)) && to !== 'BACKSPACE') return;
-    const newReplacement = [...replacement];
+    const newReplacement = [...get(replacement)];
     newReplacement[alphabet.indexOf(from)] = to === 'BACKSPACE' ? '' : to;
-    replacement = newReplacement;
+    replacement.set(newReplacement);
+    console.table(get(replacement));
     // maybe??
-    substitutions.set(replacement);
+    // substitutions.set(replacement);
   };
 
   /** @type {(replacement: string[], problem: EncryptedQuote | null) => boolean} */
@@ -45,15 +45,15 @@
   /** @type {(e: CustomEvent<any>) => void} */
   const handleReplace = (e) => replace(e.detail);
 
-  $: problem, (replacement = Array(26).fill(''));
+  $: problem;
 
   $: words = splitQuote(problem?.ciphertext ?? '');
-  $: solved = isCorrect(replacement, problem);
+  $: solved = isCorrect(get(replacement), problem);
   $: if (solved) {
     dispatch('solved');
   }
   $: dispatch('progress', {
-    progress: getProgress(replacement, problem?.ciphertext ?? ''),
+    progress: getProgress(get(replacement), problem?.ciphertext ?? ''),
   });
 
   $: log('problem:', problem, 'replacement', replacement);
@@ -68,7 +68,6 @@
     {#each words as word}
       <Word
         {word}
-        {replacement}
         disabled={solved}
         on:replace={handleReplace}
         on:error
@@ -76,7 +75,6 @@
     {/each}
   </div>
   <ReplacementTable
-    {replacement}
     quote={problem.ciphertext}
     disabled={solved}
     on:replace={handleReplace}

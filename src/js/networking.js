@@ -10,7 +10,7 @@ import {
   progress,
   solved,
   users,
-  substitutions,
+  replacement,
 } from './store.js';
 import {
   external,
@@ -22,7 +22,7 @@ import { log } from './utils.js';
 
 export const peer = new external.Peer();
 
-let stopSubSub = false;
+let preventReplacementUpdate = false;
 
 /**
  * @typedef {import('./store.js').User} User
@@ -32,7 +32,7 @@ let stopSubSub = false;
  * @typedef {{ type: 2, progress: null | boolean[], solved: boolean, name: string }}
  * UPDATE_S_MSG
  * @typedef {{ type: 3, users: User[] }} UPDATE_C_MSG
- * @typedef {{ type: 4, subs: [] }} UPDATE_SUBS_MSG
+ * @typedef {{ type: 4, replacement: [] }} UPDATE_REPLACEMENT_MSG
  * @typedef {INIT_MSG | NEW_PROB_MSG | UPDATE_S_MSG | UPDATE_C_MSG} PeerData
  */
 
@@ -92,10 +92,10 @@ const updateFromServer = (_, data) => {
   users.set(data.users.filter((u) => u.id !== ourId));
 };
 
-/** @type {DataResponder<UPDATE_SUBS_MSG>} */
-const updateSubstitutions = (_, data) => {
-  stopSubSub = true;
-  substitutions.set(data.subs);
+/** @type {DataResponder<UPDATE_REPLACEMENT_MSG>} */
+const updateReplacement = (_, data) => {
+  preventReplacementUpdate = true;
+  replacement.set(data.replacement);
 }
 
 const dataResponders = [
@@ -103,7 +103,7 @@ const dataResponders = [
   onNewProblem,
   updateFromClient,
   updateFromServer,
-  updateSubstitutions,
+  updateReplacement,
 ];
 
 /** @type {(otherId: string) => () => void} */
@@ -201,14 +201,14 @@ const subscriptions = [
       });
     }
   }),
-  substitutions.subscribe(($subs) => {
-    if(!stopSubSub)
+  replacement.subscribe(($replacement) => {
+    if(!preventReplacementUpdate)
       emit({
-        type: Messages.UPDATE_SUBSTITUTIONS,
-        subs: $subs,
+        type: Messages.UPDATE_REPLACEMENT,
+        replacement: $replacement,
       });
-    stopSubSub = false;
-  })
+    preventReplacementUpdate = false;
+  }),
 ];
 
 // @ts-ignore

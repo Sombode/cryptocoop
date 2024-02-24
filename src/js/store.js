@@ -33,7 +33,7 @@ export const hivemindConnection = writable(
   /** @type {Connection | null} */ (null)
 );
 export const progress = writable([null, [true]][0]);
-export const substitutions = writable(Array(26).fill(null));
+export const replacement = writable(Array(26).fill(''));
 export const solved = writable(false);
 export const isFirstLaunch = lswritable(firstlaunch, true);
 export const needsKeyboardEntry = writable(false);

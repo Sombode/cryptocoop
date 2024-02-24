@@ -1,11 +1,11 @@
 <script>
   import { alphabet } from '@/js/quotes.js';
   import { getDuplicates } from '@/js/utils.js';
+  import { replacement } from '@/js/store';
 
   import ReplacementCharacter from './ReplacementCharacter.svelte';
 
   export let word = '';
-  export let replacement = Array(26).fill('');
   export let disabled = false;
 
   /** @type {(word: string, replacement: string[]) => Array<string | null>} */
@@ -17,8 +17,8 @@
     });
 
   // null if char is not alphabetic, '' if no replacement, char if replacement
-  $: replacedChars = replaceChars(word, replacement);
-  $: duplicateReplacements = getDuplicates(replacement);
+  $: replacedChars = replaceChars(word, $replacement);
+  $: duplicateReplacements = getDuplicates($replacement);
 </script>
 
 <div class="word">
