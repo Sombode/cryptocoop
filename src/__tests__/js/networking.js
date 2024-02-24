@@ -44,7 +44,6 @@ const testId1 = 'test-id-1-skdfjl';
 const testId2 = 'test-id-2-fdjksl';
 const testName = 'jeff';
 const testName2 = 'joe';
-const testProgress = [false, false, false];
 const testProblem = {
   author: 'bru',
   text: 'elo',
@@ -138,7 +137,6 @@ describe('networking as a node', () => {
 
     it("updates the hivemind when node's state changes", () => {
       stores.name.set(testName);
-      stores.progress.set(testProgress);
 
       expect(messagesTo.length).toBe(3);
       expect(messagesTo.map((m) => m.msg.type)).toEqual([
@@ -147,7 +145,6 @@ describe('networking as a node', () => {
         Messages.UPDATE_SERVER_STATE,
       ]);
       expect(messagesTo[1].msg.name).toEqual(testName);
-      expect(messagesTo[2].msg.progress).toEqual(testProgress);
     });
   });
 
@@ -165,14 +162,10 @@ describe('networking as a node', () => {
       const client = {
         id: testId1,
         name: 'bru',
-        progress: null,
-        solved: false,
       };
       const server = {
         id: testId2,
         name: testName,
-        progress: [false],
-        solved: false,
       };
 
       networking.onData(testId2)({
@@ -184,7 +177,6 @@ describe('networking as a node', () => {
     });
 
     it('clears its own progress and solved when hivemind starts new game', () => {
-      stores.progress.set(testProgress.map((_) => true));
       stores.solved.set(true);
 
       networking.onData(testId2)({
@@ -192,7 +184,6 @@ describe('networking as a node', () => {
         problem: { ...testProblem },
       });
 
-      expect(get(stores.progress)).toEqual(null);
       expect(get(stores.solved)).toEqual(false);
     });
   });
@@ -243,23 +234,14 @@ describe('networking as a hivemind', () => {
     it('updates internal state when receiving node updates', () => {
       networking.onData(testId1)({
         type: Messages.UPDATE_SERVER_STATE,
-        progress: testProgress,
         name: testName,
-        solved: false,
       });
-
-      expect(get(stores.users)[0].progress).toEqual(testProgress);
-      expect(get(stores.users)[0].solved).toEqual(false);
 
       networking.onData(testId1)({
         type: Messages.UPDATE_SERVER_STATE,
-        progress: testProgress.map((_) => true),
         name: testName2,
-        solved: true,
       });
 
-      expect(get(stores.users)[0].progress.every(Boolean)).toBe(true);
-      expect(get(stores.users)[0].solved).toBe(true);
       expect(get(stores.users)[0].name).toEqual(testName2);
     });
   });
@@ -273,21 +255,6 @@ describe('networking as a hivemind', () => {
         type: Messages.NEW_PROBLEM,
         problem: testProblem,
       });
-    });
-
-    it('sets all the users progress to null when game is created', () => {
-      stores.gameProblem.set(testProblem);
-
-      expect(messagesTo.length).toBe(4);
-
-      const lastUpdate = [...messagesTo]
-        .reverse()
-        .find((m) => m.msg.type === Messages.UPDATE_CLIENT_STATE);
-
-      expect(lastUpdate).not.toBe(undefined);
-      expect(
-        lastUpdate.msg.users.every((u) => u.progress === null && !u.solved)
-      ).toBe(true);
     });
   });
 });

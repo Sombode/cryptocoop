@@ -34,7 +34,6 @@ describe('<Word />', () => {
   it('shows all replaced letters', () => {
     const { getByDisplayValue } = render(Word, {
       word: testWord,
-      replacement: testReplacement,
     });
 
     for (const letter of ['X', 'B']) {
@@ -45,7 +44,6 @@ describe('<Word />', () => {
   it('does not show non-replaceable characters', () => {
     const { getByText } = render(Word, {
       word: testWord,
-      replacement: testReplacement,
     });
 
     const adjacentElement = getDecrypted(getByText("'"));
@@ -57,7 +55,6 @@ describe('<Word />', () => {
   it('fires correct replace events', () => {
     const { getByText, component } = render(Word, {
       word: testWord,
-      replacement: testReplacement,
     });
 
     let fired = 0;
@@ -94,7 +91,6 @@ describe('<Word />', () => {
   it('marks duplicate replacements', () => {
     const { getByText } = render(Word, {
       word: testWord,
-      replacement: testDuplicateReplacement,
     });
 
     const [o, n, t] = ['O', 'N', 'T'].map(getByText).map(getPair);
@@ -106,7 +102,6 @@ describe('<Word />', () => {
   it('identifies for each letter when there is no replacement', () => {
     const { getByText } = render(Word, {
       word: testWord,
-      replacement: testReplacement,
     });
 
     const [d, o, n, t] = ['D', 'O', 'N', 'T'].map(getByText).map(getDecrypted);
@@ -119,7 +114,6 @@ describe('<Word />', () => {
   it('prohibits typing the same letter as a replacement', () => {
     const { getByText, component } = render(Word, {
       word: testWord,
-      replacement: testReplacement,
     });
 
     const cb = jest.fn();

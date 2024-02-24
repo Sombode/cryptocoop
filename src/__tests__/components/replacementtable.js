@@ -26,9 +26,7 @@ describe('<ReplacementTable />', () => {
   });
 
   it('displays replacement for each letter', () => {
-    const { getByText } = render(ReplacementTable, {
-      replacement: testReplacement,
-    });
+    const { getByText } = render(ReplacementTable);
 
     expect(getDecryptedInput(getByText('O')).value).toEqual('X');
     expect(getDecryptedInput(getByText('T')).value).toEqual('B');
