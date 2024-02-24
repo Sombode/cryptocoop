@@ -1,6 +1,6 @@
 import { derived, get, writable } from 'svelte/store';
 import { writable as lswritable } from 'svelte-local-storage-store';
-import { alphabet, firstlaunch } from './constants.js';
+import { firstlaunch } from './constants.js';
 
 /** @typedef {import('./quotes.js').EncryptedQuote} EncryptedQuote */
 
@@ -79,5 +79,6 @@ export const resetStores = () => {
   hivemindConnection.set(null);
   progress.set(null);
   solved.set(false);
+  replacement.set(Array(26).fill(''));
   connections.clear();
 };

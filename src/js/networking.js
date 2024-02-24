@@ -33,7 +33,7 @@ let preventReplacementUpdate = false;
  * UPDATE_S_MSG
  * @typedef {{ type: 3, users: User[] }} UPDATE_C_MSG
  * @typedef {{ type: 4, replacement: [] }} UPDATE_REPLACEMENT_MSG
- * @typedef {INIT_MSG | NEW_PROB_MSG | UPDATE_S_MSG | UPDATE_C_MSG} PeerData
+ * @typedef {INIT_MSG | NEW_PROB_MSG | UPDATE_S_MSG | UPDATE_C_MSG | UPDATE_REPLACEMENT_MSG} PeerData
  */
 
 /**
