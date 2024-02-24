@@ -11,10 +11,8 @@
 </script>
 
 <div class="container" class:exiting>
-  <h1>Welcome to <span class="cryptoduel"><i>Cryptoduel</i></span></h1>
-  <img alt="cryptogram logo" src="./cryptoduel-logo.svg" width="200" />
-  <HelpInfo />
-  <NameChooser label="Choose your cryptographer alias" />
+  <h1>Welcome to <span class="cryptoduel">Cryptocoop</span></h1>
+  <NameChooser label="Pick an alias" />
   <BulletButton bind:exiting>Play</BulletButton>
 </div>
 
@@ -55,13 +53,6 @@
     position: relative;
     display: block;
     font-size: 4rem;
-    animation: pulse 1.4s ease-in-out alternate infinite;
     margin-bottom: 1rem;
-  }
-
-  @keyframes pulse {
-    to {
-      transform: scale(var(--expansion-factor));
-    }
   }
 </style>
