@@ -1,8 +1,8 @@
-# Cryptoduel
+# Cryptocoop
 
-[Play Game!](https://r2dev2.github.io/cryptoduel)
+[Play Here!](https://sombode.github.io/cryptocoop/)
 
-A multiplayer cryptogram game where the fastest cryptogram solver wins!
+A fork of the multiplayer cryptogram game [Cryptoduel](https://github.com/r2dev2/cryptoduel) where players work together to solve cryptograms.
 
 ![laptop demo](./img/demo-laptop.png)
 
@@ -10,18 +10,14 @@ A multiplayer cryptogram game where the fastest cryptogram solver wins!
 
 An aristocrat cryptogram is a quote encrypted by substituting each letter with another letter.
 
-In cryptoduel, you compete with friends to see who can decrypt the quote the fastest!
-Just go to https://r2dev2.github.io/cryptoduel and send a friend a join link!
+In Cryptocoop, team up with friends to solve cryptograms as fast as possible!
+Just go to https://sombode.github.io/cryptocoop/ and send a friend a join link!
 
 The table given shows the amount of times each character appears in the quote as well as the replacement for each character. You may either enter replacment characters into the table or under each character of the quote.
 
-## Motivation
-
-Throughout all four years of high school, I competed in a [Science Olympiad event called codebusters](https://scioly.org/wiki/index.php/Codebusters). It is my favorite event and the event was more or less to solve cryptograms like the ones in this game. I hope other codebusters competitors may either train or just have fun with this game.
-
 ## Keyboard Shortcuts
 
-`Tab` and `Shift+Tab` will go to the next letter and previous letter respectively.
+`Right Arrow` and `Left Arrow` will go to the next letter and previous letter respectively.
 
 ## Development
 
@@ -48,4 +44,6 @@ yarn format # format the code
 
 ## Developers
 
-Cryptoduel is developed by [Ronak Badhe (r2dev2)](https://github.com/r2dev2)
+Cryptocoop (the fork) is developed by Levy Le
+
+Cryptoduel (the original) is developed by [Ronak Badhe (r2dev2)](https://github.com/r2dev2)
