@@ -7,8 +7,6 @@ import {
   hivemindConnection,
   name,
   self,
-  progress,
-  solved,
   users,
   replacement,
 } from './store.js';
@@ -78,8 +76,6 @@ const updateFromClient = (id, data) => {
         : {
             ...u,
             name: data.name,
-            progress: data.progress,
-            solved: data.solved,
           }
     )
   );
@@ -181,15 +177,10 @@ const subscriptions = [
       get(hivemindConnection)?.send({
         type: Messages.UPDATE_SERVER_STATE,
         name: $self.name,
-        progress: $self.progress,
-        solved: $self.solved,
       });
   }),
   gameProblem.subscribe(($problem) => {
     if ($problem === null) return;
-
-    progress.set(null);
-    solved.set(false);
 
     if (isHivemindBrain) {
       users.update((us) =>

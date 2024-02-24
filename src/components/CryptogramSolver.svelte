@@ -21,9 +21,6 @@
     const newReplacement = [...get(replacement)];
     newReplacement[alphabet.indexOf(from)] = to === 'BACKSPACE' ? '' : to;
     replacement.set(newReplacement);
-    console.table(get(replacement));
-    // maybe??
-    // substitutions.set(replacement);
   };
 
   /** @type {(replacement: string[], problem: EncryptedQuote | null) => boolean} */
@@ -35,26 +32,17 @@
         problem.plaintext[i] === replacement[alphabet.indexOf(ch)]
     );
   };
-
-  /** @type {(replacement: string[], ciphertext: string) => boolean[]} */
-  const getProgress = (replacement, ciphertext) =>
-    [...ciphertext].map(
-      (ch) => alphabet.includes(ch) && replacement[alphabet.indexOf(ch)] !== ''
-    );
-
+  
   /** @type {(e: CustomEvent<any>) => void} */
   const handleReplace = (e) => replace(e.detail);
 
   $: problem;
 
   $: words = splitQuote(problem?.ciphertext ?? '');
-  $: solved = isCorrect(get(replacement), problem);
+  $: solved = isCorrect($replacement, problem);
   $: if (solved) {
     dispatch('solved');
   }
-  $: dispatch('progress', {
-    progress: getProgress(get(replacement), problem?.ciphertext ?? ''),
-  });
 
   $: log('problem:', problem, 'replacement', replacement);
 </script>

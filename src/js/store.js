@@ -1,4 +1,4 @@
-import { derived, get, writable } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import { writable as lswritable } from 'svelte-local-storage-store';
 import { firstlaunch } from './constants.js';
 
@@ -9,8 +9,6 @@ const defaultUsers = [
   {
     id: '',
     name: '',
-    progress: [null, [true]][0],
-    solved: false,
   },
 ].slice(1);
 
@@ -32,7 +30,6 @@ export const hintEnabled = lswritable('hint', false);
 export const hivemindConnection = writable(
   /** @type {Connection | null} */ (null)
 );
-export const progress = writable([null, [true]][0]);
 export const replacement = writable(Array(26).fill(''));
 export const solved = writable(false);
 export const isFirstLaunch = lswritable(firstlaunch, true);
@@ -46,9 +43,9 @@ export const connections = new Map(); // id -> connection
 export const keyboardSubscriptions = new Map();
 
 export const self = derived(
-  [id, name, progress, solved],
-  ([id, name, progress, solved]) => {
-    return { id, name, progress, solved };
+  [id, name],
+  ([id, name]) => {
+    return { id, name };
   }
 );
 
@@ -57,28 +54,13 @@ export const problemStart = derived(
   ($gp) => $gp?.start ?? Date.now()
 );
 
-/** @type {import('svelte/store').Readable<Map<string, number>>} */
-export const timeTakenByOpponents = derived(
-  [users, problemStart],
-  ([$users, $problemStart]) => {
-    return new Map(
-      $users.map((u) => [
-        u.id,
-        u.solved
-          ? get(timeTakenByOpponents).get(u.id) ?? Date.now() - $problemStart
-          : Date.now() - $problemStart,
-      ])
-    );
-  }
-);
-
 export const resetStores = () => {
   id.set('');
   gameProblem.set(null);
   name.set('');
-  hivemindConnection.set(null);
-  progress.set(null);
+hivemindConnection.set(null);
   solved.set(false);
   replacement.set(Array(26).fill(''));
+  hivemindConnection.set(null);
   connections.clear();
 };

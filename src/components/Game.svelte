@@ -1,7 +1,6 @@
 <script>
   import HelpInfo from './HelpInfo.svelte';
   import NameChooser from './NameChooser.svelte';
-  import OpponentProgress from './OpponentProgress.svelte';
   import CryptogramSolver from './CryptogramSolver.svelte';
   import JoinLink from './JoinLink.svelte';
   import Checkbox from './Checkbox.svelte';
@@ -17,7 +16,6 @@
   import {
     hintEnabled,
     patristocratEnabled,
-    progress,
     gameProblem,
     solved,
     users,
@@ -76,17 +74,11 @@
       <Lobby />
     </Panel>
   {/if}
-  {#if $users.length > 0 && $gameProblem}
-    <Panel title="Progress">
-      <OpponentProgress />
-    </Panel>
-  {/if}
   {#if $gameProblem || isHivemindBrain}
     <Panel title="Game">
       {#if $gameProblem}
         <CryptogramSolver
           problem={$gameProblem}
-          on:progress={(e) => progress.set(e.detail.progress)}
           on:solved={() => solved.set(true)}
           on:error
         />
