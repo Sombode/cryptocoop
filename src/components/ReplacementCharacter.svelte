@@ -6,7 +6,7 @@
 <script>
   import { subscribeToKeyboard } from '@/js/actions.js';
   import { isAndroid, Errors } from '@/js/constants.js';
-  import { focussedKey, needsKeyboardEntry } from '@/js/store.js';
+  import { users, focussedKey, needsKeyboardEntry } from '@/js/store.js';
   import { replaceableElement } from '@/js/use.js';
   import { createEventDispatcher, onMount } from 'svelte';
 
@@ -66,6 +66,7 @@
   class="decrypted-letter"
   class:empty={replacement === ''}
   class:focussed-char={$focussedKey === ogchar}
+  class:remote-focussed={$users.map(({ focussedKey }) => focussedKey)?.includes(ogchar)}
   class:non-alphabetic={replacement === null}
   class:enable-underline={!disableUnderline}
   class:disabled
@@ -127,6 +128,12 @@
     cursor: pointer;
     background-color: var(--focussed-char-color);
   }
+
+  :not(.disabled).remote-focussed .decrypted-letter-input {
+    cursor: pointer;
+    background-color: var(--remote-focussed-char-color);
+  }
+
 
   :not(.disabled) .decrypted-letter-input:hover {
     cursor: pointer;

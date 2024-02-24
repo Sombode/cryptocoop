@@ -95,7 +95,7 @@
   }
 
   .replacement-table :global(div.decrypted-letter-input) {
-    justify-content: left;
+    justify-content: center;
   }
 
   .no-occurence {

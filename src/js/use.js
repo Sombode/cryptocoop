@@ -51,10 +51,10 @@ export const replaceableElement = (node, options_ = {}) => {
     }
 
     if (options.ogchar === e.key.toUpperCase()) {
-      // dispatch('error', {
-      //   id: Errors.NO_SELF_DECODE,
-      //   msg: 'Letters cannot decode to themselves',
-      // });
+      dispatch('error', {
+        id: Errors.NO_SELF_DECODE,
+        msg: 'Letters cannot decode to themselves',
+      });
       return;
     }
 

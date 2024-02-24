@@ -9,6 +9,7 @@ import {
   self,
   users,
   replacement,
+  solved,
 } from './store.js';
 import {
   external,
@@ -27,7 +28,7 @@ let preventReplacementUpdate = false;
  * @typedef {import('peerjs').DataConnection} Connection
  * @typedef {{ type: 0, name: string }} INIT_MSG
  * @typedef {{ type: 1, problem: import('./quotes.js').EncryptedQuote }} NEW_PROB_MSG
- * @typedef {{ type: 2, progress: null | boolean[], solved: boolean, name: string }}
+ * @typedef {{ type: 2, focussedKey: string | null, name: string }}
  * UPDATE_S_MSG
  * @typedef {{ type: 3, users: User[] }} UPDATE_C_MSG
  * @typedef {{ type: 4, replacement: [] }} UPDATE_REPLACEMENT_MSG
@@ -55,8 +56,7 @@ const initializeRemotePlayer = (id, data) => {
     {
       id,
       name: data.name,
-      progress: null,
-      solved: false,
+      focussedKey: null,
     },
   ]);
 };
@@ -76,6 +76,7 @@ const updateFromClient = (id, data) => {
         : {
             ...u,
             name: data.name,
+            focussedKey: data.focussedKey,
           }
     )
   );
@@ -177,14 +178,17 @@ const subscriptions = [
       get(hivemindConnection)?.send({
         type: Messages.UPDATE_SERVER_STATE,
         name: $self.name,
+        focussedKey: $self.focussedKey,
       });
   }),
   gameProblem.subscribe(($problem) => {
     if ($problem === null) return;
 
+    solved.set(false);
+
     if (isHivemindBrain) {
       users.update((us) =>
-        us.map((u) => ({ ...u, progress: null, solved: false }))
+        us.map((u) => ({ ...u, focussedKey: null }))
       );
       emit({
         type: Messages.NEW_PROBLEM,

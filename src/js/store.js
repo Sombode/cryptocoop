@@ -9,6 +9,8 @@ const defaultUsers = [
   {
     id: '',
     name: '',
+    /** @type {string | null} */
+    focussedKey: null,
   },
 ].slice(1);
 
@@ -43,9 +45,9 @@ export const connections = new Map(); // id -> connection
 export const keyboardSubscriptions = new Map();
 
 export const self = derived(
-  [id, name],
-  ([id, name]) => {
-    return { id, name };
+  [id, name, focussedKey],
+  ([id, name, focussedKey]) => {
+    return { id, name, focussedKey };
   }
 );
 
