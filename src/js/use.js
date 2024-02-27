@@ -32,21 +32,23 @@ export const replaceableElement = (node, options_ = {}) => {
 
   setProperties();
 
+  const selectKey = (offset = 1, selector = ".decrypted-letter:not(.non-alphabetic, .disabled) > .decrypted-letter-input") => {
+    /** @type {HTMLElement[]} */
+    const letters = [].slice.call(document.querySelectorAll(selector));
+    return letters[letters.indexOf(node) + offset];
+  }
+
   /** @type {(e: KeyboardEvent) => void} */
   const onKeyDown = (e) => {
     if (options.disabled) return;
 
     e.preventDefault();
     if( e.key == 'ArrowLeft') {
-      /** @type {HTMLElement[]} */
-      const letters = [].slice.call(document.querySelectorAll(".decrypted-letter:not(.non-alphabetic, .disabled) > .decrypted-letter-input"));
-      letters[letters.indexOf(node) - 1]?.focus();
+      selectKey(-1)?.focus();
       return;
     }
     if( e.key == 'ArrowRight') {
-      /** @type {HTMLElement[]} */
-      const letters = [].slice.call(document.querySelectorAll(".decrypted-letter:not(.non-alphabetic, .disabled) > .decrypted-letter-input"));
-      letters[letters.indexOf(node) + 1]?.focus();
+      selectKey()?.focus();
       return;
     }
 
@@ -63,10 +65,13 @@ export const replaceableElement = (node, options_ = {}) => {
       to: e.key.toUpperCase(),
     });
 
+    if( e.key == 'Backspace') {
+      selectKey(-1)?.focus();
+      return;
+    }
+
     // Focus on next letter if possible (horribly janky I know)
-    /** @type {HTMLElement[]} */
-    const letters = [].slice.call(document.querySelectorAll(".decrypted-letter.empty:not(.non-alphabetic, .disabled) > .decrypted-letter-input"));
-    letters[letters.indexOf(node) + 1]?.focus();
+    selectKey(1, ".decrypted-letter.empty:not(.non-alphabetic, .disabled) > .decrypted-letter-input")?.focus();
   };
 
   node.addEventListener('keydown', onKeyDown);
