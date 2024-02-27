@@ -71,7 +71,12 @@ export const replaceableElement = (node, options_ = {}) => {
     }
 
     // Focus on next letter if possible (horribly janky I know)
-    selectKey(1, ".decrypted-letter.empty:not(.non-alphabetic, .disabled) > .decrypted-letter-input")?.focus();
+    let key;
+    let offset = 0;
+    do
+      key = selectKey(++offset, ".decrypted-letter.empty:not(.non-alphabetic, .disabled) > .decrypted-letter-input");
+    while(key && key.parentElement?.previousElementSibling?.innerHTML === options.ogchar && key !== node);
+    key?.focus();
   };
 
   node.addEventListener('keydown', onKeyDown);
