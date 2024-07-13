@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "target": "es2015",
+        "paths": {
+            "https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js": ["../../../node_modules/peerjs/dist/peerjs.min.js"]
+        }
+    }
+}

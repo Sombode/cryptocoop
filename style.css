@@ -1,0 +1,92 @@
+html {
+    --font-size: 24px;
+    --letter-gap: 0px;
+    --word-gap: 0px;
+
+    --one-select: #c5effc;
+    --one-focus: #65CDEE;
+    --two-select: #f7bebe;
+    --two-focus: #FF7A7A;
+    --three-select: #d2f3c2;
+    --three-focus: #97E274;
+}
+
+body {
+    font-family: "Courier New", Courier, monospace;
+    font-size: var(--font-size);
+    font-weight: 700;
+    user-select: none;
+}
+
+#quoteDiv {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+#quoteSpan {
+    display: flex;
+    flex-flow: row wrap;
+    width: 60em;
+    gap: calc(1em + var(--word-gap));
+}
+
+.word {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0;
+}
+
+.letter {
+    display: flex;
+    height: calc(2.5em + 2px);
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.letter > * {
+    padding: 2px var(--letter-gap);
+}
+
+.plaintext {
+    width: 1em;
+    border: none;
+    background-color: transparent;
+    color: black;
+    font: inherit;
+    text-align: center;
+    caret-color: transparent;
+    cursor: text;
+}
+
+.plaintext:focus {
+    outline: none;
+}
+
+.plaintext:hover {
+    background-color: var(--one-focus);
+}
+
+.plaintext::placeholder {
+    color: grey;
+}
+
+.selected {
+    background-color: var(--one-select);
+}
+
+.selected:has(.plaintext:focus) {
+    background-color: var(--one-focus);
+}
+
+.cursor {
+    position: absolute;
+    width: 2em;
+    z-index: 1;
+    visibility: hidden;
+    transform: translateX(-25%) translateY(2.5em);
+    transition: top 0.05s cubic-bezier(0.34, 1.56, 0.64, 1), left 0.075s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: opacity(0.8);
+}
