@@ -1,107 +1,98 @@
 const peer = new Peer();
+const connections = new Map();
 let hiveBrain = new URLSearchParams(location.search).get('room');
 let isHiveBrain = hiveBrain === null;
-// REFACTOR: might be able to remove this
-let hiveBrainConn;
 let id;
-// consider changing the map to an array?
-const connections = new Map();
-const Messages = {
-    INIT: 0,
-    ERROR: 1,
-    NEW_QUOTE: 2,
-    REPLACE_LETTER: 3,
-}
-
-let players = new Array();
-
-const MAX_PLAYERS = 2;
 
 const emit = (msg) => connections.forEach((conn) => conn.send(msg));
 
-const onData = (targetId) => (data) => (messageHandlers[data.type] ? messageHandlers[data.type](targetId, data) : null);
-
-const removePlayer = (targetId) => () => {
-  players = players.filter((player) => player.id !== targetId);
-  connections.delete(targetId);
-};
-
-const sendInitialState = (conn) =>
-  (conn ? conn.send({
-    type: Messages.INIT,
-    // TODO: Add names!
-    name: id,
-  }) : null);
-
-const openConnection = (conn) =>
-  new Promise((res) => {
-    conn.on('open', () => {
-      if (conn.peer === hiveBrain) hiveBrainConn = conn;
-      connections.set(conn.peer, conn);
-      conn.on('data', onData(conn.peer));
-      // TODO: handle disconnects by polling
-      // dataChannel.peerConnection.iceConnectionState
-      conn.on('close', removePlayer(conn.peer));
-      setTimeout(() => { sendInitialState(conn) }, 100);
-      res(conn);
-    });
+// Only the hiveBrain needs to be watching the player array for changes
+// So only it uses a proxy for the players array
+let players = (isHiveBrain ? arraySubscription([], () => {
+  // Sync player list with all other players
+  emit({
+    type: Messages.UPDATE_PLAYERS,
+    players: players
   });
-
-const connectTo = (targetId) =>
-  new Promise((res) => {
-    const conn = peer.connect(targetId);
-    openConnection(conn).then(res);
-    // const unsub = id.subscribe(($id) => {
-    //   if ($id === '') return;
-    //   const conn = peer.connect(targetId);
-    //   setTimeout(() => unsub());
-    //   openConnection(conn).then(res);
-    // });
-  });
-
-const initializePlayer = (id, data) => {
-  players.push({
-    id,
-    name: data.name,
-    // TODO: ick (my own code!)
-    focussedKey: null
-  });
-};
-
-const handleError = (_, data) => console.error(data.error);
-
-const onNewQuote = (_, data) => insertQuote(data.quote);
-
-const remoteReplaceLetter = (_, data) => replaceLetter(data.letter, data.replacement);
+}) : []);
 
 const messageHandlers = [
-  initializePlayer,
+  updatePlayers,
   handleError,
   onNewQuote,
   remoteReplaceLetter
-]
+];
 
+const onData = (targetId) => (data) => (messageHandlers[data.type] ? messageHandlers[data.type](targetId, data) : null);
+
+const removePlayer = (targetID) => () => {
+  if(isHiveBrain) players = players.filter((player) => player.id !== targetID);
+  connections.delete(targetID);
+};
+
+const openConnection = (conn) => {
+  conn.on('open', () => {
+    connections.set(conn.peer, conn);
+    conn.on('data', onData(conn.peer));
+    // TODO: handle disconnects by polling
+    // dataChannel.peerConnection.iceConnectionState
+    conn.on('close', removePlayer(conn.peer));
+    if(!isHiveBrain) conn.send({
+      type: Messages.UPDATE_PLAYERS,
+      player: {
+        id,
+        name: id
+      }
+    });
+  });
+}
+
+// An intermediary function for the hiveBrain to validate incoming connections
 function handleConnection(conn) {
   if(isHiveBrain && players.length >= MAX_PLAYERS) {
     // If the room is full, let the incoming connection know before closing it
+    // TODO: add code to remove dead players before rejecting new ones
     conn.on("open", () => {
       conn.send({
-        type: Messages.ERROR,
         // Consider error codes if there are enough types of errors
+        type: Messages.ERROR,
         error: "The room is full."
       });
       conn.close();
     });
-    return;
-  }
-  openConnection(conn);
+  } else openConnection(conn);
+}
+
+// For the hiveBrain, this function serves to initialize a new player
+// For other players, it serves to update the list of current players
+function updatePlayers(_, data) {
+  if(isHiveBrain) players.push(data.player);
+  else players = data.players;
+}
+
+function handleError(_, data) {
+  console.error(data.error);
+  alert(data.error);
+}
+
+function onNewQuote(_, data) {
+  insertQuote(data.quote);
+}
+
+function remoteReplaceLetter(_, data) {
+  replaceLetter(data.letter, data.replacement);
 }
 
 peer.on("open", ($id) => {
     id = $id;
     document.getElementById("debugId").innerText = `${(isHiveBrain ? "[HIVEBRAIN] " : "")} ${id}`;
-    if(!isHiveBrain && hiveBrain != null) connectTo(hiveBrain);
-    console.info(isHiveBrain ? `${window.location.href}?room=${encodeURIComponent(id)}` : window.location.href);
+    if(isHiveBrain) {
+      players[0] = {
+        id,
+        name: id
+      };
+    } else if(hiveBrain != null) openConnection(peer.connect(hiveBrain));
+    console.info(getJoinLink());
 });
 
 peer.on('connection', handleConnection);

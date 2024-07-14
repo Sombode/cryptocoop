@@ -9,7 +9,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 
 const quoteSpan = document.getElementById("quoteSpan");
-const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
 let replacements = new Array(26);
 let solutionReplacements;
 let inputs; // update this after every quote change
@@ -239,6 +238,7 @@ function getRelativeWordAnchor(origin, offset) {
 }
 
 function generateQuoteList() {
+    // FIXME: what the fuck is this typescript
     return __awaiter(this, void 0, void 0, function* () {
         // TODO: Add json filtering for mistakes
         quotes = yield (fetch("./quotes/toebes.json")
@@ -292,6 +292,4 @@ const generateRandomEncryption = () => {
 };
 
 onresize = handleResize;
-if(isHiveBrain) { 
-    generateQuoteList().then(newQuote);
-}
+if(isHiveBrain) generateQuoteList().then(newQuote);
