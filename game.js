@@ -54,7 +54,14 @@ function createWord(ciphertext) {
 
 function insertSentence(ciphertext) {
     // dev function, shouldn't acutally be used
+    // TODO: delete this (deprecated duplicate of insertQuote)
     ciphertext.split(" ").forEach((word) => quoteSpan === null || quoteSpan === void 0 ? void 0 : quoteSpan.appendChild(createWord(word)));
+}
+
+function insertQuote(quote) {
+    quoteSpan.innerHTML = "";
+    quote.split(" ").forEach((word) => quoteSpan === null || quoteSpan === void 0 ? void 0 : quoteSpan.appendChild(createWord(word)));
+    inputs = Array.from(document.querySelectorAll(".plaintext"));
 }
 
 function replaceLetter(letter, replacement) {
@@ -75,7 +82,12 @@ function replaceLetter(letter, replacement) {
     document.querySelectorAll(`.${letter} > input`).forEach((input) => {
         input.value = replacement;
     });
-    if (document.querySelectorAll(".plaintext:placeholder-shown").length === 0) {
+    emit({
+        type: Messages.REPLACE_LETTER,
+        letter: letter,
+        replacement: replacement
+    });
+    if (isHiveBrain && document.querySelectorAll(".plaintext:placeholder-shown").length === 0) {
         const testReplacements = replacements.map((letter) => letter.toUpperCase());
         for (let i = 0; i < testReplacements.length; i++) {
             if (testReplacements[i] != solutionReplacements[i] && solutionReplacements[i]) {
@@ -147,6 +159,9 @@ function handleInput(event) {
                 break;
             case "arrowdown":
                 getRelativeWordAnchor(event.currentTarget, -1).focus();
+                break;
+            case "escape":
+                newQuote();
                 break;
             default:
                 // FIXME: this is horrible horrible horrible horrible
@@ -253,9 +268,11 @@ function newQuote() {
             const index = alphabet.indexOf(a);
             return (index === -1 ? a : encryption[index]);
         }).join("");
-        quoteSpan.innerHTML = "";
-        quoteText.split(" ").forEach((word) => quoteSpan === null || quoteSpan === void 0 ? void 0 : quoteSpan.appendChild(createWord(word)));
-        inputs = Array.from(document.querySelectorAll(".plaintext"));
+        insertQuote(quoteText);
+        emit({
+            type: Messages.NEW_QUOTE,
+            quote: quoteText
+        });
     }
 }
 
@@ -275,4 +292,6 @@ const generateRandomEncryption = () => {
 };
 
 onresize = handleResize;
-generateQuoteList().then(newQuote);
+if(isHiveBrain) { 
+    generateQuoteList().then(newQuote);
+}

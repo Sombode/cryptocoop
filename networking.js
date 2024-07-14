@@ -6,12 +6,14 @@ let id;
 const connections = new Map();
 const Messages = {
     INIT: 0,
+    NEW_QUOTE: 1,
+    REPLACE_LETTER: 2,
 }
 
 const arraySubscription = (target, updateFunc) => new Proxy(target, {
   set(target, prop) {
     // array.push() hits this trap twice as
-    // it also set the length (which counts I guess)
+    // it also sets the length (which counts I guess)
     
     // also, using setTimeout here to delay updateFunc to the next event cycle
     // since the array doesn't actually get modified until afterwards
@@ -71,6 +73,8 @@ const openConnection = (conn) =>
         if (conn.peer === hiveBrain) hiveBrainConn = conn;
         connections.set(conn.peer, conn);
         conn.on('data', onData(conn.peer));
+        // TODO: handle disconnects by polling
+        // dataChannel.peerConnection.iceConnectionState
         conn.on('close', removePlayer(conn.peer));
         setTimeout(() => {
           sendInitialState(conn);
@@ -100,8 +104,18 @@ const initializePlayer = (id, data) => {
   });
 };
 
+const onNewQuote = (id, data) => {
+  if(!isHiveBrain) insertQuote(data.quote);
+}
+
+const remoteReplaceLetter = (id, data) => {
+  replaceLetter(data.letter, data.replacement);
+}
+
 const messageHandlers = [
   initializePlayer,
+  onNewQuote,
+  remoteReplaceLetter
 ]
 
 peer.on("open", ($id) => {
@@ -119,12 +133,3 @@ peer.on('connection', openConnection);
 peer.on('error', (e) => {
   console.error(e);
 });
-
-/**
- * @param {number} i
- * @param {string} j
- * @returns {number}
- */
-const add = (i, j) => {
-  return i + parseFloat(j);
-};
