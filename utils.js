@@ -1,5 +1,5 @@
 const MAX_PLAYERS = 3;
-const alphabet = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+const ALPHABET = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
 const Messages = {
     UPDATE_PLAYERS: 0,
     ERROR: 1,
@@ -17,4 +17,19 @@ const arraySubscription = (target, updateFunc) => new Proxy(target, {
       if(prop != "length") setTimeout(updateFunc);
       return Reflect.set(...arguments);
     }
-  });
+});
+
+// This is taken directly from r2dev2's Cryptoduel,
+// (which the original Cryptocoop forked)
+// Hence why the code is actually good here
+const shuffleArray = (arr) => arr
+    .map((a) => ([Math.random(), a]))
+    .sort((a, b) => a[0] - b[0])
+    .map((a) => a[1]);
+
+const generateRandomEncryption = () => {
+    const encMap = shuffleArray([...Array(26).keys()]);
+    if (encMap.some((x, i) => x === i))
+        return generateRandomEncryption();
+    return encMap.map((i) => ALPHABET[i]);
+};
