@@ -7,6 +7,8 @@ const Messages = {
     REPLACE_LETTER: 3
 }
 
+const clamp = (value, min, max) => Math.max(Math.min(value, max), min);
+
 const getJoinLink = () => (isHiveBrain ? `${window.location.href}?room=${encodeURIComponent(id)}` : window.location.href);
 
 // Creates a proxy object to call updateFunc every time target (an array)

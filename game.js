@@ -1,18 +1,7 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
 const quoteSpan = document.getElementById("quoteSpan");
 const cursor = document.getElementById("cursor1");
 
-let replacements = new Array(26);
-let replacementsSolution;
+let replacements, replacementsSolution;
 let inputs, wordAnchors;
 let quotes;
 let quoteIndex = 0;
@@ -74,7 +63,8 @@ function replaceLetter(letter, replacement) {
     });
     if (isHiveBrain && document.querySelectorAll(".plaintext:placeholder-shown").length === 0) {
         const testReplacements = replacements.map((letter) => letter.toUpperCase());
-        for (let i = 0; i < testReplacements.length; i++) {
+        // TODO: change this to a some function
+        for (const i in testReplacements) {
             if (testReplacements[i] != replacementsSolution[i] && replacementsSolution[i]) return;
         }
         console.log("solved!");
@@ -199,7 +189,7 @@ function getRelativeInput(origin, offset, skipFilled) {
             }
         }
     }
-    newIndex = Math.min(Math.max(newIndex, 0), inputs.length - 1);
+    newIndex = clamp(newIndex, 0, inputs.length - 1);
     return inputs[newIndex];
 }
 
@@ -217,7 +207,7 @@ function getRelativeWordAnchor(origin, offset) {
         if (offset < 0)
             offset++; // Since this already snaps to the previous anchor, the offset should be adjusted
     }
-    const newIndex = Math.min(Math.max(originIndex + offset, 0), wordAnchors.length - 1);
+    const newIndex = clamp(originIndex + offset, 0, wordAnchors.length - 1);
     return wordAnchors[newIndex];
 }
 
@@ -239,6 +229,7 @@ function newQuote() {
         let quoteText = quoteObj.quote.toUpperCase();
         console.log(quoteText);
         const encryption = generateRandomEncryption();
+        repalcements = new Array(26);
         replacementsSolution = new Array(26);
         for(const i in encryption) {
             const letter = ALPHABET[i];
