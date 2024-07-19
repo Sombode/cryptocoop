@@ -31,7 +31,6 @@ const shuffleArray = (arr) => arr
 
 const generateRandomEncryption = () => {
     const encMap = shuffleArray([...Array(26).keys()]);
-    if (encMap.some((x, i) => x === i))
-        return generateRandomEncryption();
+    if (encMap.some((x, i) => x === i)) return generateRandomEncryption();
     return encMap.map((i) => ALPHABET[i]);
 };
