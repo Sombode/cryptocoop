@@ -45,9 +45,8 @@ function insertQuote(quote) {
 
 function replaceLetter(letter, replacement) {
     const index = ALPHABET.indexOf(letter);
-    // ensure replacement isn't redundant and no letter decodes to itself
-    // TODO: trying to self-decode moves focus (have it not, please and thank you)
-    if (replacements[index] === replacement || replacement === ALPHABET[index]) return;
+    // Ensure replacement isn't redundant and no letter decodes to itself
+    if (replacements[index] === replacement || replacement === ALPHABET[index].toLowerCase()) return -1;
     const existingIndex = replacements.indexOf(replacement);
     if (existingIndex != -1) {
         // If the letter has already been used in the plaintext, replace them with empty slots
@@ -63,10 +62,12 @@ function replaceLetter(letter, replacement) {
     });
     if (isHiveBrain && document.querySelectorAll(".plaintext:placeholder-shown").length === 0) {
         const testReplacements = replacements.map((letter) => letter.toUpperCase());
-        if(testReplacements.some((index) => (testReplacements[index] != replacementsSolution[index] && replacementsSolution[index]))) return;
+        if(testReplacements.some((_, i) => (testReplacements[i] != replacementsSolution[i] && replacementsSolution[i]))) return 0;
         console.log("solved!");
         newQuote();
     }
+    // This function returns a number to change focusOffset by (so that self-decodes don't shift focus)
+    return 0;
 }
 
 function handleInput(event) {
@@ -96,9 +97,10 @@ function handleInput(event) {
             skipFilled = true;
             break;
     }
-    if(replacement !== undefined) replaceLetter(event.currentTarget.parentElement.classList[1], replacement);
-    getRelativeInput(event.currentTarget, focusOffset, skipFilled).focus();
     event.preventDefault();
+    // See the comment at the end of replaceLetter for why the += exists here
+    if(replacement !== undefined) focusOffset += replaceLetter(event.currentTarget.parentElement.classList[1], replacement);
+    getRelativeInput(event.currentTarget, focusOffset, skipFilled).focus();
 }
 
 function handleFocus(event) {
@@ -129,13 +131,19 @@ function getRelativeInput(origin, offset, skipFilled) {
     if (!inputs) return origin;
     const originIndex = inputs.indexOf(origin);
     let newIndex = originIndex + offset;
-    if (skipFilled)
+    if (skipFilled) {
+        if(!inputs[newIndex]) return origin;
         if (offset < 0)
-            while (inputs[newIndex] && inputs[newIndex].value != "")
+            while (inputs[newIndex].value != "") {
                 newIndex--;
+                if(!inputs[newIndex]) return origin;
+            }
         else
-            while (inputs[newIndex] && inputs[newIndex].value != "")
+            while (inputs[newIndex].value != "") {
                 newIndex++;
+                if(!inputs[newIndex]) return origin;
+            }
+    }
     newIndex = clamp(newIndex, 0, inputs.length - 1);
     return inputs[newIndex];
 }
