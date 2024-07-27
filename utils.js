@@ -4,7 +4,8 @@ const Messages = {
     UPDATE_PLAYERS: 0,
     ERROR: 1,
     NEW_QUOTE: 2,
-    REPLACE_LETTER: 3
+    REPLACE_LETTER: 3,
+    CHANGED_FOCUS: 4
 }
 
 const clamp = (value, min, max) => Math.max(Math.min(value, max), min);
@@ -16,7 +17,9 @@ const getJoinLink = () => (isHiveBrain ? `${window.location.href}?room=${encodeU
 const arraySubscription = (target, updateFunc) => new Proxy(target, {
     set(_, prop) {
       // Turns out functions that change length hit this trap
-      if(prop != "length") setTimeout(updateFunc);
+      if(prop != "length") setTimeout(() => {
+        updateFunc.call(this, prop)
+      });
       return Reflect.set(...arguments);
     }
 });

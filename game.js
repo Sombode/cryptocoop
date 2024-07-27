@@ -1,10 +1,13 @@
 const quoteSpan = document.getElementById("quoteSpan");
-const cursor = document.getElementById("cursor1");
+const cursorTEMPVAR = document.getElementById("cursor0");
 
 let replacements, replacementsSolution;
 let inputs;
 let quotes;
 let quoteIndex = 0;
+let letterFoci = arraySubscription([], (prop) => {
+    handleFocus(prop);
+});
 
 function createLetter(ciphertext) {
     const letterWrapper = document.createElement("span");
@@ -22,8 +25,13 @@ function createLetter(ciphertext) {
         plainLetter.placeholder = "-";
         plainLetter.readOnly = true;
         plainLetter.onkeydown = (event) => handleInput(event);
-        plainLetter.onfocus = (event) => handleFocus(event);
-        plainLetter.onblur = handleFocusLoss;
+        //plainLetter.onfocus = (event) => handleFocus(numID, event.target);
+        plainLetter.onfocus = (event) => {
+            letterFoci[numID] = event.target;
+        };
+        plainLetter.onblur = () => {
+            letterFoci[numID] = null;
+        };
         letterWrapper.appendChild(plainLetter);
     }
     return letterWrapper;
@@ -39,6 +47,7 @@ function createWord(ciphertext) {
 
 function insertQuote(quote) {
     quoteSpan.innerHTML = "";
+    replacements = new Array(26);
     quote.split(" ").forEach((word) => quoteSpan.appendChild(createWord(word)));
     inputs = Array.from(document.querySelectorAll(".plaintext"));
 }
@@ -103,27 +112,33 @@ function handleInput(event) {
     getRelativeInput(event.currentTarget, focusOffset, skipFilled).focus();
 }
 
-function handleFocus(event) {
-    // NOTE: scrolling ruins this behavior (ensure no scrolling?)
-    const boundingRect = event.target.parentElement.getBoundingClientRect();
+function handleFocus(playerNum) {
+    const input = letterFoci[playerNum];
+    const cursor = document.getElementById(`cursor${playerNum}`);
+    Array.from(document.querySelectorAll(`.selected${playerNum}`)).forEach((letter) => letter.classList.remove(`selected${playerNum}`));
+    Array.from(document.querySelectorAll(`.focused${playerNum}`)).forEach((letter) => letter.classList.remove(`focused${playerNum}`));
+    if(playerNum == numID) emit({
+        type: Messages.CHANGED_FOCUS,
+        index: inputs.indexOf(input)
+    });
+    if(!input) {
+        cursor.style.visibility = "hidden";
+        return;
+    }
+    const focusedLetter = input.parentElement.classList[1];
+    input.parentElement.classList.add(`focused${playerNum}`);
+    Array.from(document.getElementsByClassName(focusedLetter)).forEach((letter) => letter.classList.add(`selected${playerNum}`));
+    const boundingRect = input.parentElement.getBoundingClientRect();
     cursor.style.top = `${boundingRect.top}px`;
     cursor.style.left = `${boundingRect.left}px`;
     cursor.style.visibility = "visible";
-    Array.from(document.getElementsByClassName(event.target.parentElement.classList[1])).forEach((letter) => letter.classList.add("selected"));
-}
-
-function handleFocusLoss() {
-    // note: this relies on the fact that at least on chrome, blur events run BEFORE focus events
-    // if some browser happens to run blur AFTER focus, this will likely be all kinds of messed up
-    Array.from(document.getElementsByClassName("selected")).forEach((letter) => letter.classList.remove("selected"));
-    cursor.style.visibility = "hidden";
 }
 
 function handleResize() {
     if (document.activeElement.classList.contains("plaintext")) {
         const boundingRect = document.activeElement.parentElement.getBoundingClientRect();
-        cursor.style.top = `${boundingRect.top}px`;
-        cursor.style.left = `${boundingRect.left}px`;
+        cursorTEMPVAR.style.top = `${boundingRect.top}px`;
+        cursorTEMPVAR.style.left = `${boundingRect.left}px`;
     }
 }
 
@@ -166,7 +181,6 @@ function newQuote() {
         let quoteText = quoteObj.quote.toUpperCase();
         console.log(quoteText);
         const encryption = generateRandomEncryption();
-        replacements = new Array(26);
         replacementsSolution = new Array(26);
         for(const i in encryption) {
             const letter = ALPHABET[i];

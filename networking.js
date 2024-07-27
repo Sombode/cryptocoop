@@ -3,6 +3,7 @@ const connections = new Map();
 let hiveBrain = new URLSearchParams(location.search).get('room');
 let isHiveBrain = hiveBrain === null;
 let id;
+let numID = (isHiveBrain ? 0 : undefined);
 
 const emit = (msg) => connections.forEach((conn) => conn.send(msg));
 
@@ -20,7 +21,8 @@ const messageHandlers = [
   updatePlayers,
   handleError,
   onNewQuote,
-  remoteReplaceLetter
+  remoteReplaceLetter,
+  remoteChangeFocus
 ];
 
 const onData = (targetId) => (data) => (messageHandlers[data.type] ? messageHandlers[data.type](targetId, data) : null);
@@ -66,8 +68,15 @@ function handleConnection(conn) {
 // For the hiveBrain, this function serves to initialize a new player
 // For other players, it serves to update the list of current players
 function updatePlayers(_, data) {
-  if(isHiveBrain) players.push(data.player);
-  else players = data.players;
+  if(isHiveBrain)
+    players.push(data.player);
+  else {
+    players = data.players;
+    if(!numID) {
+      numID = players.findIndex((player) => player.id == id);
+      document.querySelector(":root").style.setProperty("--hover-color", `var(--${numID}-focus)`);
+    }
+  }
 }
 
 function handleError(_, data) {
@@ -81,6 +90,11 @@ function onNewQuote(_, data) {
 
 function remoteReplaceLetter(_, data) {
   replaceLetter(data.letter, data.replacement);
+}
+
+function remoteChangeFocus($id, data) {
+  let $numID = players.findIndex((player) => player.id == $id);
+  letterFoci[$numID] = (data.index == -1 ? null : inputs[data.index]);
 }
 
 peer.on("open", ($id) => {
