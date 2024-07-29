@@ -3,12 +3,14 @@ html {
     --letter-gap: 0px;
     --word-gap: 0px;
 
-    --one-select: #c5effc;
-    --one-focus: #65CDEE;
-    --two-select: #f7bebe;
-    --two-focus: #FF7A7A;
-    --three-select: #d2f3c2;
-    --three-focus: #97E274;
+    --0-select: #c5effc;
+    --0-focus: #65CDEE;
+    --1-select: #f7bebe;
+    --1-focus: #FF7A7A;
+    --2-select: #d2f3c2;
+    --2-focus: #97E274;
+
+    --hover-color: var(--0-focus);
 }
 
 body {
@@ -66,20 +68,67 @@ body {
 }
 
 .plaintext:hover {
-    background-color: var(--one-focus);
+    background-color: var(--hover-color);
 }
 
 .plaintext::placeholder {
     color: grey;
 }
 
-.selected {
-    background-color: var(--one-select);
+.selected0 {
+    background-color: var(--0-select);
 }
 
-.selected:has(.plaintext:focus) {
-    background-color: var(--one-focus);
+.selected0:has(.plaintext:focus) {
+    background-color: var(--0-focus) !important;
 }
+
+.focused0 {
+    background-color: var(--0-focus) !important;
+}
+
+.selected1 {
+    background-color: var(--1-select);
+}
+
+.focused1 {
+    background-color: var(--1-focus) !important;
+}
+
+.selected2 {
+    background-color: var(--2-select);
+}
+
+.focused2 {
+    background-color: var(--2-focus) !important;
+}
+
+#replacementTable {
+    font-size: 12px;
+    line-height: 1.5;
+    display: table-row-group;
+    vertical-align: middle;
+    width: auto;
+    border-spacing: 0px;
+    border-collapse: separate;
+}
+
+#replacementTable th {
+    background-color: #d3d3d3;
+    text-align: center;
+    width: 2rem;
+    border: 1px solid #000;
+    margin: 0;
+    padding: 0.1rem 0.15rem;
+    text-indent: initial;
+  }
+  
+  #replacementTable td {
+    border: 1px solid #000;
+    margin: 0;
+    padding: 0.1rem 0.15rem;
+    text-align: center;
+  }
 
 .cursor {
     position: absolute;
