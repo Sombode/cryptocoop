@@ -103,6 +103,33 @@ body {
     background-color: var(--2-focus) !important;
 }
 
+#replacementTable {
+    font-size: 12px;
+    line-height: 1.5;
+    display: table-row-group;
+    vertical-align: middle;
+    width: auto;
+    border-spacing: 0px;
+    border-collapse: separate;
+}
+
+#replacementTable th {
+    background-color: #d3d3d3;
+    text-align: center;
+    width: 2rem;
+    border: 1px solid #000;
+    margin: 0;
+    padding: 0.1rem 0.15rem;
+    text-indent: initial;
+  }
+  
+  #replacementTable td {
+    border: 1px solid #000;
+    margin: 0;
+    padding: 0.1rem 0.15rem;
+    text-align: center;
+  }
+
 .cursor {
     position: absolute;
     width: 2em;

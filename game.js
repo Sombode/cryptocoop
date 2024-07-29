@@ -9,6 +9,14 @@ let letterFoci = arraySubscription([], (prop) => {
     handleFocus(prop);
 });
 
+const generateQuoteList = () => new Promise((res) => {
+    fetch("./quotes/toebes.json")
+        .then((r) => r.json())
+        .then(shuffleArray)
+        .then(($quotes) => { quotes = $quotes; })
+        .then(res);
+});
+
 function createLetter(ciphertext) {
     const letterWrapper = document.createElement("span");
     letterWrapper.classList.add("letter");
@@ -135,10 +143,13 @@ function handleFocus(playerNum) {
 }
 
 function handleResize() {
-    if (document.activeElement.classList.contains("plaintext")) {
-        const boundingRect = document.activeElement.parentElement.getBoundingClientRect();
-        cursorTEMPVAR.style.top = `${boundingRect.top}px`;
-        cursorTEMPVAR.style.left = `${boundingRect.left}px`;
+    for(playerNum in letterFoci) {
+        const input = letterFoci[playerNum];
+        const cursor = document.getElementById(`cursor${playerNum}`);
+        if(!input) continue;
+        const boundingRect = input.parentElement.getBoundingClientRect();
+        cursor.style.top = `${boundingRect.top}px`;
+        cursor.style.left = `${boundingRect.left}px`;
     }
 }
 
@@ -162,14 +173,6 @@ function getRelativeInput(origin, offset, skipFilled) {
     newIndex = clamp(newIndex, 0, inputs.length - 1);
     return inputs[newIndex];
 }
-
-const generateQuoteList = () => new Promise((res) => {
-    fetch("./quotes/toebes.json")
-        .then((r) => r.json())
-        .then(shuffleArray)
-        .then(($quotes) => { quotes = $quotes; })
-        .then(res);
-});
 
 function newQuote() {
     if (!quotes) {
