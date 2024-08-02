@@ -19,8 +19,7 @@ const generateQuoteList = () => new Promise((res) => {
 
 function createLetter(ciphertext) {
     const letterWrapper = document.createElement("span");
-    letterWrapper.classList.add("letter");
-    letterWrapper.classList.add(ciphertext);
+    letterWrapper.classList.add("letter", ciphertext);
     const cipherLetter = document.createElement("span");
     cipherLetter.classList.add("ciphertext");
     cipherLetter.appendChild(document.createTextNode(ciphertext));
@@ -194,10 +193,43 @@ function newQuote() {
             return (index === -1 ? letter : encryption[index]);
         }).join("");
         insertQuote(quoteText);
+        generateFreqTable(quoteText);
         emit({
             type: Messages.NEW_QUOTE,
             quote: quoteText
         });
+    }
+}
+
+function generateFreqTable(quoteText) {
+    const tableBody = document.querySelector("#freqTable tbody");
+    tableBody.innerHTML = "";
+    for(letter of ALPHABET) {
+        const count = (quoteText.match(new RegExp(letter, "g")) || []).length;
+        const tableRow = document.createElement("tr");
+        tableRow.innerHTML = `<td>${letter}</td><td>${count}</td><td><span class="freqLetter ${letter}"></span><span class="freqHighlight ${letter}"></span></td>`;
+        //
+        const plainLetter = document.createElement("input");
+        plainLetter.classList.add("plaintext", "freqInput");
+        plainLetter.type = "text";
+        plainLetter.maxLength = 1;
+        plainLetter.placeholder = "-";
+        plainLetter.readOnly = true;
+        plainLetter.onkeydown = (event) => handleInput(event);
+        //plainLetter.onfocus = (event) => handleFocus(numID, event.target);
+        plainLetter.onfocus = (event) => {
+            letterFoci[numID] = event.target;
+        };
+        plainLetter.onblur = () => {
+            letterFoci[numID] = null;
+        };
+        tableRow.children[2].firstChild.appendChild(plainLetter);
+        //
+        // const letterHighlight = document.createElement("span");
+        // letterHighlight.classList.add("freqHighlight", letter);
+        // tableRow.children[2].firstChild.appendChild(letterHighlight);
+        //
+        tableBody.appendChild(tableRow);
     }
 }
 
