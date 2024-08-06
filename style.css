@@ -17,6 +17,7 @@ body {
     font-size: 1.5rem;
     font-weight: 700;
     user-select: none;
+    padding-top: 3em;
 }
 
 .invisibleText {
@@ -31,6 +32,8 @@ body {
     display: flex;
     width: 100%;
     justify-content: center;
+    border-top: thin solid black;
+    padding-top: 1em;
 }
 
 #quoteSpan {
@@ -55,7 +58,7 @@ body {
     align-items: center;
 }
 
-.letter > * {
+.letter>* {
     padding: 2px var(--letter-gap);
 }
 
@@ -74,7 +77,8 @@ body {
     outline: none;
 }
 
-.plaintext:hover {
+.plaintext:hover,
+.freqLetter:has(.plaintext:hover)+.freqHighlight {
     background-color: var(--hover-color);
 }
 
@@ -82,32 +86,37 @@ body {
     color: grey;
 }
 
+/* TODO: Which player wins the specificity battle? */
+
 .selected0 {
     background-color: var(--0-select);
 }
 
 .selected0:has(.plaintext:focus) {
-    background-color: var(--0-focus) !important;
+    background-color: var(--0-focus);
 }
 
-.focused0 {
-    background-color: var(--0-focus) !important;
+.focused0,
+.focused0+.freqHighlight {
+    background-color: var(--0-focus);
 }
 
 .selected1 {
     background-color: var(--1-select);
 }
 
-.focused1 {
-    background-color: var(--1-focus) !important;
+.focused1,
+.focused1+.freqHighlight {
+    background-color: var(--1-focus);
 }
 
 .selected2 {
     background-color: var(--2-select);
 }
 
-.focused2 {
-    background-color: var(--2-focus) !important;
+.focused2,
+.focused2+.freqHighlight {
+    background-color: var(--2-focus);
 }
 
 .cursor {
@@ -125,6 +134,8 @@ body {
     width: 100%;
     justify-content: center;
     pointer-events: none;
+    padding: 3em 0;
+    border-bottom: thin solid black;
 }
 
 #freqTable {
@@ -138,7 +149,7 @@ body {
     font-size: 1rem;
 }
 
-#freqTable > * {
+#freqTable>* {
     display: inherit;
 }
 
@@ -149,16 +160,17 @@ body {
     /* clip-path: content-box; */
 }
 
+
 #freqTable .header {
     width: auto;
     position: absolute;
     background-color: #d3d3d3;
     text-indent: initial;
-    transform: translateX(calc(1px - 100%));
+    transform: translateX(-100%);
 }
-  
+
 #freqTable td {
-    outline: thin solid #000;
+    outline: thin solid black;
     margin: 0;
     padding: 0;
     text-align: center;
@@ -166,7 +178,7 @@ body {
 }
 
 /* #freqTable td:has(> .freqLetter) {
-
+    
 } */
 
 /* .freqLetter {
@@ -176,18 +188,19 @@ body {
     justify-content: center;
     position: relative;
     top: calc(-0.7px - 0.6rem - 200%);
-}
-
-.freqLetter:is(.selected0, .selected1, .selected2) {
+    }
+    
+    .freqLetter:is(.selected0, .selected1, .selected2) {
     z-index: -1;
-} */
+    } */
 
 .freqLetter {
     position: relative;
-    top: -100%;
+    top: -125%;
+    background-color: transparent !important;
 }
 
-.freqLetter > * {
+.freqLetter>* {
     padding: 2px var(--letter-gap);
 }
 
@@ -198,13 +211,13 @@ body {
     position: relative;
     top: calc(0.7px + 3.6rem); */
     pointer-events: auto;
-    transform: translateY(100%);
+    background-color: transparent !important;
+    transform: translateY(125%);
 }
 
 .freqHighlight {
     display: block;
     position: relative;
-    background-color: red;
     z-index: -1;
     width: 100%;
     /* NOT precise values, being generous to clip it*/
@@ -212,4 +225,9 @@ body {
     top: -350%; */
     height: 300%;
     top: -300%;
+}
+
+#freqTable .empty .freqHighlight {
+    top: -200%;
+    background-color: #d3d3d3;
 }

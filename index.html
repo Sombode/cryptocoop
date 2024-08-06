@@ -12,7 +12,7 @@
 <body>
     <div id="quoteDiv">
         <span id="quoteSpan">
-            No quote yet!
+            No quote yet! Wait for the host to start a new quote.
         </span>
     </div>
     <div id="freqTableDiv">
@@ -28,11 +28,16 @@
             </tbody>
         </table>
     </div>
-    <div>
-        <h1>DEBUG</h1>
-        <h2>ID</h2>
-        <span id="debugId"><span>
-    </div>
+    <div id="tempDebugDiv">
+        <h3 id="joinLink">Join Link Loading...</h3>
+        <button id="newQuote" onclick="if(isHiveBrain) { newQuote(); } else { alert('You are not the host!'); }">New Quote</button>
+        <div id="playerList">
+            <h4 id="playerNumberStatus">Loading Player Number...</h4>
+            <h4 id="player0Status">Player 1 not connected.</h4>
+            <h4 id="player1Status">Player 2 not connected.</h4>
+            <h4 id="player2Status">Player 3 not connected.</h4>
+        </div>
+    </div> 
     <img class="cursor" id="cursor0" src="images/cursors/1.png" />
     <img class="cursor" id="cursor1" src="images/cursors/2.png" />
     <img class="cursor" id="cursor2" src="images/cursors/3.png" />

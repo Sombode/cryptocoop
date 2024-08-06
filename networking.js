@@ -75,7 +75,13 @@ function updatePlayers(_, data) {
     if(!numID) {
       numID = players.findIndex((player) => player.id == id);
       document.querySelector(":root").style.setProperty("--hover-color", `var(--${numID}-focus)`);
+      document.getElementById("playerNumberStatus").innerText = `You are Player ${Number(numID) + 1}!`;
     }
+  }
+  for(i in players) {
+    // DEBUG
+    const statusElement = document.getElementById(`player${i}Status`);
+    statusElement.innerText = `Player ${Number(i) + 1}: ${(players[i] ? "" : "Not ")}Connected.`;
   }
 }
 
@@ -99,16 +105,20 @@ function remoteChangeFocus($id, data) {
 
 peer.on("open", ($id) => {
     id = $id;
-    document.getElementById("debugId").innerText = `${(isHiveBrain ? "[HIVEBRAIN] " : "")} ${id}`;
     if(isHiveBrain) {
       players[0] = {
         id,
         name: id
       };
     } else if(hiveBrain != null) openConnection(peer.connect(hiveBrain));
+    // DEBUG
     console.info(getJoinLink());
+    document.getElementById("joinLink").innerHTML = `Join Link: <a href="${getJoinLink()}">${getJoinLink()}</a>`;
 });
 
 peer.on('connection', handleConnection);
 
-peer.on('error', (e) => console.error(e));
+peer.on('error', (e) => {
+  console.error(e);
+  alert("A network error occurred. See the console for details.");
+});

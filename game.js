@@ -1,8 +1,7 @@
 const quoteSpan = document.getElementById("quoteSpan");
-const cursorTEMPVAR = document.getElementById("cursor0");
 
 let replacements, replacementsSolution;
-let inputs;
+let inputs, freqInputs;
 let quotes;
 let quoteIndex = 0;
 let letterFoci = arraySubscription([], (prop) => {
@@ -32,7 +31,6 @@ function createLetter(ciphertext) {
         plainLetter.placeholder = "-";
         plainLetter.readOnly = true;
         plainLetter.onkeydown = (event) => handleInput(event);
-        //plainLetter.onfocus = (event) => handleFocus(numID, event.target);
         plainLetter.onfocus = (event) => {
             letterFoci[numID] = event.target;
         };
@@ -100,11 +98,11 @@ function handleInput(event) {
             break;
         case "arrowright":
             focusOffset = 1;
-            skipFilled = event.shiftKey;
+            skipFilled = event.ctrlKey;
             break;
         case "arrowleft":
             focusOffset = -1;
-            skipFilled = event.shiftKey;
+            skipFilled = event.ctrlKey;
             break;
         default:
             if(event.ctrlKey || !key.match(/^[a-z]{1}$/)) return;
@@ -153,24 +151,25 @@ function handleResize() {
 }
 
 function getRelativeInput(origin, offset, skipFilled) {
-    if (!inputs) return origin;
-    const originIndex = inputs.indexOf(origin);
+    const inputArray = (origin.classList.contains("freqInput") ? freqInputs : inputs);
+    if (!inputArray) return origin;
+    const originIndex = inputArray.indexOf(origin);
     let newIndex = originIndex + offset;
     if (skipFilled) {
-        if(!inputs[newIndex]) return origin;
+        if(!inputArray[newIndex]) return origin;
         if (offset < 0)
-            while (inputs[newIndex].value != "") {
+            while (inputArray[newIndex].value != "") {
                 newIndex--;
-                if(!inputs[newIndex]) return origin;
+                if(!inputArray[newIndex]) return origin;
             }
         else
-            while (inputs[newIndex].value != "") {
+            while (inputArray[newIndex].value != "") {
                 newIndex++;
-                if(!inputs[newIndex]) return origin;
+                if(!inputArray[newIndex]) return origin;
             }
     }
-    newIndex = clamp(newIndex, 0, inputs.length - 1);
-    return inputs[newIndex];
+    newIndex = clamp(newIndex, 0, inputArray.length - 1);
+    return inputArray[newIndex];
 }
 
 function newQuote() {
@@ -204,34 +203,36 @@ function newQuote() {
 function generateFreqTable(quoteText) {
     const tableBody = document.querySelector("#freqTable tbody");
     tableBody.innerHTML = "";
+    freqInputs = [];
     for(letter of ALPHABET) {
-        const count = (quoteText.match(new RegExp(letter, "g")) || []).length;
+        const count = (quoteText ? (quoteText.match(new RegExp(letter, "g")) || []).length : 0);
         const tableRow = document.createElement("tr");
         tableRow.innerHTML = `<td>${letter}</td><td>${count}</td><td><span class="freqLetter ${letter}"></span><span class="freqHighlight ${letter}"></span></td>`;
-        //
-        const plainLetter = document.createElement("input");
-        plainLetter.classList.add("plaintext", "freqInput");
-        plainLetter.type = "text";
-        plainLetter.maxLength = 1;
-        plainLetter.placeholder = "-";
-        plainLetter.readOnly = true;
-        plainLetter.onkeydown = (event) => handleInput(event);
-        //plainLetter.onfocus = (event) => handleFocus(numID, event.target);
-        plainLetter.onfocus = (event) => {
-            letterFoci[numID] = event.target;
-        };
-        plainLetter.onblur = () => {
-            letterFoci[numID] = null;
-        };
-        tableRow.children[2].firstChild.appendChild(plainLetter);
-        //
-        // const letterHighlight = document.createElement("span");
-        // letterHighlight.classList.add("freqHighlight", letter);
-        // tableRow.children[2].firstChild.appendChild(letterHighlight);
-        //
+        if(count == 0) {
+            tableRow.classList.add("empty");
+        } else {
+            const plainLetter = document.createElement("input");
+            plainLetter.classList.add("plaintext", "freqInput");
+            plainLetter.type = "text";
+            plainLetter.maxLength = 1;
+            plainLetter.placeholder = "-";
+            plainLetter.readOnly = true;
+            plainLetter.onkeydown = (event) => handleInput(event);
+            plainLetter.onfocus = (event) => {
+                letterFoci[numID] = event.target;
+            };
+            plainLetter.onblur = () => {
+                letterFoci[numID] = null;
+            };
+            freqInputs.push(plainLetter);
+            tableRow.children[2].firstChild.appendChild(plainLetter);
+        }
         tableBody.appendChild(tableRow);
     }
 }
 
 onresize = handleResize;
 if(isHiveBrain) generateQuoteList().then(newQuote);
+else generateFreqTable();
+// separate if statement since DEBUG
+if(isHiveBrain) document.getElementById("playerNumberStatus").innerText = "You are Player 1!";
