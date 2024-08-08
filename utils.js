@@ -5,7 +5,8 @@ const Messages = {
     ERROR: 1,
     NEW_QUOTE: 2,
     REPLACE_LETTER: 3,
-    CHANGED_FOCUS: 4
+    CHANGED_FOCUS: 4,
+    COMPLETION: 5
 }
 
 const clamp = (value, min, max) => Math.max(Math.min(value, max), min);

@@ -22,7 +22,8 @@ const messageHandlers = [
   handleError,
   onNewQuote,
   remoteReplaceLetter,
-  remoteChangeFocus
+  remoteChangeFocus,
+  onCompletition
 ];
 
 const onData = (targetId) => (data) => (messageHandlers[data.type] ? messageHandlers[data.type](targetId, data) : null);
@@ -101,6 +102,10 @@ function remoteReplaceLetter(_, data) {
 function remoteChangeFocus($id, data) {
   let $numID = players.findIndex((player) => player.id == $id);
   letterFoci[$numID] = (data.index == -1 ? null : inputs[data.index]);
+}
+
+function onCompletition(_, data) {
+  endCode(data.time);
 }
 
 peer.on("open", ($id) => {

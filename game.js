@@ -75,6 +75,7 @@ function insertQuote(quote) {
     quote.split(" ").forEach((word) => quoteSpan.appendChild(createWord(word)));
     inputs = Array.from(document.querySelectorAll(".plaintext"));
     generateFreqTable(quote);
+    endScreen.style.animation = "none";
     activeCode = true;
     startTime = new Date().getTime();
     requestAnimationFrame(updateTime);
@@ -100,14 +101,12 @@ function replaceLetter(letter, replacement) {
     if (isHiveBrain && document.querySelectorAll(".plaintext:placeholder-shown").length === 0) {
         const testReplacements = replacements.map((letter) => letter.toUpperCase());
         if(testReplacements.some((_, i) => (testReplacements[i] != replacementsSolution[i] && replacementsSolution[i]))) return 0;
-        // TODO: move this to a separate win function for every client
-        activeCode = false;
-        const time = new Date().getTime() - startTime;
-        solvedTime.innerHTML = `Solved in ${formatMillis(time)}`;
-        stopwatch.innerHTML = formatMillis(time);
-        Array.from(document.querySelectorAll(".plaintext")).forEach((input) => { input.disabled = true; });
-        endScreen.style.animation = "none";
-        endScreen.style.animation = "0.6s cubic-bezier(0.32, 0, 0.67, 0) 1 forwards slideIn";
+        const solveTime = new Date().getTime() - startTime;
+        endCode(solveTime);
+        emit({
+            type: Messages.COMPLETION,
+            time: solveTime
+        });
     }
     // This function returns a number to change focusOffset by (so that self-decodes don't shift focus)
     return 0;
@@ -202,6 +201,16 @@ function getRelativeInput(origin, offset, skipFilled) {
     return inputArray[newIndex];
 }
 
+function endCode(time) {
+    activeCode = false;
+    const formattedTime = formatMillis(time);
+    solvedTime.innerHTML = `Solved in ${formattedTime}`;
+    stopwatch.innerHTML = formattedTime;
+    Array.from(document.querySelectorAll(".plaintext")).forEach((input) => { input.disabled = true; });
+    endScreen.style.animation = "none";
+    endScreen.style.animation = "0.6s cubic-bezier(0.32, 0, 0.67, 0) 1 forwards slideIn";
+}
+
 function newQuote() {
     if (!quotes) {
         console.error("No quotes found. Attempting to generate list.");
@@ -221,7 +230,6 @@ function newQuote() {
             const index = ALPHABET.indexOf(letter);
             return (index === -1 ? letter : encryption[index]);
         }).join("");
-        endScreen.style.animation = "none";
         insertQuote(quoteText);
         activeCode = true;
         emit({
