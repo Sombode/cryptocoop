@@ -1,4 +1,5 @@
 const quoteSpan = document.getElementById("quoteSpan");
+const freqTable = document.getElementById("freqTable");
 const endScreen = document.getElementById("endScreen");
 const stopwatch = document.getElementById("stopwatch");
 const solvedTime = document.getElementById("solvedTime");
@@ -9,6 +10,7 @@ let replacements, replacementsSolution;
 let inputs, freqInputs;
 let quotes;
 let quoteIndex = 0;
+let letterJumping = false;
 let letterFoci = arraySubscription([], (prop) => {
     handleFocus(prop);
 });
@@ -133,8 +135,19 @@ function handleInput(event) {
             focusOffset = -1;
             skipFilled = event.ctrlKey;
             break;
+        case "enter":
+            letterJumping = true;
+            freqTable.classList.add(`selected${numID}`);
+            break;
         default:
             if(event.ctrlKey || !key.match(/^[a-z]{1}$/)) return;
+            if(letterJumping) {
+                const targetLetter = document.querySelector(`.freqLetter.${key.toUpperCase()} .freqInput`);
+                if(targetLetter) targetLetter.focus();
+                freqTable.classList.remove(`selected${numID}`);
+                letterJumping = false;
+                return;
+            }
             replacement = key;
             focusOffset = 1;
             skipFilled = true;
@@ -143,7 +156,8 @@ function handleInput(event) {
     event.preventDefault();
     // See the comment at the end of replaceLetter for why the += exists here
     if(replacement !== undefined) focusOffset += replaceLetter(event.currentTarget.parentElement.classList[1], replacement);
-    getRelativeInput(event.currentTarget, focusOffset, skipFilled).focus();
+    const nextInput = getRelativeInput(event.currentTarget, focusOffset, skipFilled); 
+    if(nextInput) nextInput.focus();
 }
 
 function handleFocus(playerNum) {

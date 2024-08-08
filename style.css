@@ -218,7 +218,7 @@ body {
 
 #freqTable .empty .freqHighlight {
     top: -200%;
-    background-color: #d3d3d3;
+    background-color: #d3d3d3 !important;
 }
 
 #topBar {
