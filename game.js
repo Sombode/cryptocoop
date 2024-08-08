@@ -1,5 +1,10 @@
 const quoteSpan = document.getElementById("quoteSpan");
+const endScreen = document.getElementById("endScreen");
+const stopwatch = document.getElementById("stopwatch");
+const solvedTime = document.getElementById("solvedTime");
 
+let startTime = new Date().getTime();
+let activeCode = false;
 let replacements, replacementsSolution;
 let inputs, freqInputs;
 let quotes;
@@ -15,6 +20,20 @@ const generateQuoteList = () => new Promise((res) => {
         .then(($quotes) => { quotes = $quotes; })
         .then(res);
 });
+
+function formatMillis(time) {
+    const minutes = Math.floor(time / 60000);
+    const seconds = Math.round((time / 1000) % 60);
+    const millis = time % 1000;
+    return `${(minutes < 10 ? "0" : "")}${minutes}:${(seconds < 10 ? "0" : "")}${seconds}.${(millis < 100 ? "0" : "")}${(millis < 10 ? "0" : "")}${millis}`;
+}
+
+function updateTime() {
+    if(!activeCode) return;
+    const time = new Date().getTime() - startTime;
+    stopwatch.innerHTML = formatMillis(time);
+    window.requestAnimationFrame(updateTime);
+}
 
 function createLetter(ciphertext) {
     const letterWrapper = document.createElement("span");
@@ -55,12 +74,16 @@ function insertQuote(quote) {
     replacements = new Array(26);
     quote.split(" ").forEach((word) => quoteSpan.appendChild(createWord(word)));
     inputs = Array.from(document.querySelectorAll(".plaintext"));
+    generateFreqTable(quote);
+    activeCode = true;
+    startTime = new Date().getTime();
+    requestAnimationFrame(updateTime);
 }
 
 function replaceLetter(letter, replacement) {
     const index = ALPHABET.indexOf(letter);
     // Ensure replacement isn't redundant and no letter decodes to itself
-    if (replacements[index] === replacement || replacement === ALPHABET[index].toLowerCase()) return -1;
+    if (replacements[index] === replacement || replacement === ALPHABET[index].toLowerCase()) return (replacement === null ? 0 : -1);
     const existingIndex = replacements.indexOf(replacement);
     if (existingIndex != -1) {
         // If the letter has already been used in the plaintext, replace them with empty slots
@@ -77,14 +100,21 @@ function replaceLetter(letter, replacement) {
     if (isHiveBrain && document.querySelectorAll(".plaintext:placeholder-shown").length === 0) {
         const testReplacements = replacements.map((letter) => letter.toUpperCase());
         if(testReplacements.some((_, i) => (testReplacements[i] != replacementsSolution[i] && replacementsSolution[i]))) return 0;
-        console.log("solved!");
-        newQuote();
+        // TODO: move this to a separate win function for every client
+        activeCode = false;
+        const time = new Date().getTime() - startTime;
+        solvedTime.innerHTML = `Solved in ${formatMillis(time)}`;
+        stopwatch.innerHTML = formatMillis(time);
+        Array.from(document.querySelectorAll(".plaintext")).forEach((input) => { input.disabled = true; });
+        endScreen.style.animation = "none";
+        endScreen.style.animation = "0.6s cubic-bezier(0.32, 0, 0.67, 0) 1 forwards slideIn";
     }
     // This function returns a number to change focusOffset by (so that self-decodes don't shift focus)
     return 0;
 }
 
 function handleInput(event) {
+    // TODO: add cool shortcuts like ctrl-z
     const key = event.key.toLowerCase();
     let replacement, focusOffset, skipFilled;
     switch(key) {
@@ -191,8 +221,9 @@ function newQuote() {
             const index = ALPHABET.indexOf(letter);
             return (index === -1 ? letter : encryption[index]);
         }).join("");
+        endScreen.style.animation = "none";
         insertQuote(quoteText);
-        generateFreqTable(quoteText);
+        activeCode = true;
         emit({
             type: Messages.NEW_QUOTE,
             quote: quoteText
