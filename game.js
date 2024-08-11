@@ -222,7 +222,7 @@ function endCode(time) {
     stopwatch.innerHTML = formattedTime;
     Array.from(document.querySelectorAll(".plaintext")).forEach((input) => { input.disabled = true; });
     endScreen.style.animation = "none";
-    endScreen.style.animation = "0.6s cubic-bezier(0.32, 0, 0.67, 0) 1 forwards slideIn";
+    endScreen.style.animation = "0.75s cubic-bezier(0.25, 1, 0.5, 1) 1 forwards slideIn";
 }
 
 function newQuote() {
@@ -282,6 +282,11 @@ function generateFreqTable(quoteText) {
         }
         tableBody.appendChild(tableRow);
     }
+}
+
+// DEV FUNCTION
+function solve() {
+    for(i in replacementsSolution) if(replacementsSolution[i]) replaceLetter(ALPHABET[i], replacementsSolution[i]);
 }
 
 onresize = handleResize;
